@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from aiRecommendation import AiRecommendationPage  
-from fertilizerPage import FertilizerPage
+from aiRecommendation import AiRecommendationPage  # Ensure this is implemented
+from fertilizerPage import FertilizerPage  # Import the FertilizerPage
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
             button = QtWidgets.QPushButton(option)
             button.setStyleSheet("color: white; font-size: 16px; border: none; padding: 10px; text-align: left;")
             button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            button.clicked.connect(self.updateContent)
+            button.clicked.connect(lambda checked, opt=option: self.updateContent(opt))
             self.menuButtons[option] = button
             self.menuLayout.addWidget(button)
 
@@ -55,13 +55,10 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Fertigation Control Panel"))
 
-    def updateContent(self):
-        # Update the content area based on the selected menu option
-        sender = self.sender()
-        if sender:
-            selectedOption = sender.text()
-            self.loadPage(selectedOption)
-            self.updateMenuStyles(selectedOption)
+    def updateContent(self, selectedOption):
+        # Load the appropriate page based on the selected option
+        self.loadPage(selectedOption)
+        self.updateMenuStyles(selectedOption)
 
     def loadPage(self, pageName):
         # Remove existing content
@@ -72,6 +69,8 @@ class Ui_MainWindow(object):
         # Load the appropriate page
         if pageName == "AI Recommendation":
             self.currentPage = AiRecommendationPage()
+        elif pageName == "Fertilizer":
+            self.currentPage = FertilizerPage()  # Load FertilizerPage
         else:
             self.currentPage = QtWidgets.QLabel(pageName)
             self.currentPage.setStyleSheet("font-size: 24px; color: #109d4c;")
