@@ -76,11 +76,11 @@ class FertilizerPage(QWidget):
         back_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: white; color: #109d4c; border: 2px solid #109d4c; border-radius: 5px;")
         back_button.clicked.connect(self.show_initial_view)
         button_layout.addWidget(back_button)
-
-        proceed_button = QPushButton("Proceed to Mixing")
-        proceed_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: #109d4c; color: white; border-radius: 5px;")
-        proceed_button.clicked.connect(self.proceed_to_mixing)
-        button_layout.addWidget(proceed_button)
+# Declare as an instance attribute
+        self.proceed_to_mixing_button = QPushButton("Proceed to Mixing")
+        self.proceed_to_mixing_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: #109d4c; color: white; border-radius: 5px;")
+        self.proceed_to_mixing_button.clicked.connect(self.proceed_to_mixing)
+        button_layout.addWidget(self.proceed_to_mixing_button)
 
         layout.addLayout(button_layout)
 
@@ -133,4 +133,7 @@ class FertilizerPage(QWidget):
         self.stacked_widget.setCurrentWidget(self.user_preferences_view)
 
     def proceed_to_mixing(self):
-        print("Proceeding to Mixing...")  # Placeholder for mixing page navigation
+        from mainWindow import Ui_MainWindow
+        ui = Ui_MainWindow()
+        ui.loadPage("Mixer")
+  # Placeholder for mixing page navigation

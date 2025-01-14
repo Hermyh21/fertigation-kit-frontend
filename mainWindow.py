@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from aiRecommendation import AiRecommendationPage  # Ensure this is implemented
 from fertilizerPage import FertilizerPage  # Import the FertilizerPage
+from mixerPage import MixerPage
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -70,7 +71,9 @@ class Ui_MainWindow(object):
         if pageName == "AI Recommendation":
             self.currentPage = AiRecommendationPage()
         elif pageName == "Fertilizer":
-            self.currentPage = FertilizerPage()  # Load FertilizerPage
+            self.currentPage = FertilizerPage()
+        elif pageName == "Mixer":
+            self.currentPage = MixerPage()
         else:
             self.currentPage = QtWidgets.QLabel(pageName)
             self.currentPage.setStyleSheet("font-size: 24px; color: #109d4c;")
