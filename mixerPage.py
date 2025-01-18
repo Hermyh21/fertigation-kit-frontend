@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QDialog, QDialogButtonBox
-from PyQt5.QtCore import QTimer, QTime
-
+from PyQt5.QtCore import QTimer, QTime, Qt  
 class MixerPage(QWidget):
     def __init__(self):
         super().__init__()
@@ -13,7 +12,7 @@ class MixerPage(QWidget):
         # Timer Display
         self.timer_label = QLabel("00:00:00", self)
         self.timer_label.setStyleSheet("font-size: 24px; color: #109d4c;")
-        self.timer_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.timer_label.setAlignment(Qt.AlignCenter)  
         self.layout.addWidget(self.timer_label)
 
         # Buttons
@@ -65,5 +64,5 @@ class MixerPage(QWidget):
 
     def release_action(self, dialog, confirmed):
         if confirmed:
-            print("Released to the field!")  # Replace with actual release logic
+            print("Released to the field!") 
         dialog.close()
