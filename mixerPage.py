@@ -1,68 +1,100 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QDialog, QDialogButtonBox
-from PyQt5.QtCore import QTimer, QTime, Qt  
-class MixerPage(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton, QFormLayout, QLineEdit, QHBoxLayout, QSpinBox
+)
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import QTimer
 
-    def initUI(self):
+
+class MixerPage(QWidget):
+    def __init__(self, nitrogen=0, phosphorous=0, potassium=0, water=0):
+        super().__init__()
+        self.nitrogen = nitrogen
+        self.phosphorous = phosphorous
+        self.potassium = potassium
+        self.water = water
+        self.init_ui()
+
+    def init_ui(self):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        # Timer Display
-        self.timer_label = QLabel("00:00:00", self)
-        self.timer_label.setStyleSheet("font-size: 24px; color: #109d4c;")
-        self.timer_label.setAlignment(Qt.AlignCenter)  
-        self.layout.addWidget(self.timer_label)
+        # Title
+        title = QLabel("Mixer Page")
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #109d4c;")
+        self.layout.addWidget(title)
+
+        # Fertilizer amounts
+        amounts_label = QLabel(f"""
+        Nitrogen: {self.nitrogen}L\n
+        Phosphorous: {self.phosphorous}L\n
+        Potassium: {self.potassium}L\n
+        Water: {self.water}L
+        """)
+        amounts_label.setAlignment(Qt.AlignCenter)
+        amounts_label.setStyleSheet("font-size: 16px; color: black;")
+        self.layout.addWidget(amounts_label)
+
+        # Mixing timer input
+        form_layout = QFormLayout()
+        self.timer_input = QSpinBox()
+        self.timer_input.setRange(1, 300)  # Timer range from 1 to 300 seconds
+        self.timer_input.setValue(30)  # Default value
+        form_layout.addRow("Set Mixing Timer (seconds):", self.timer_input)
+        self.layout.addLayout(form_layout)
 
         # Buttons
-        self.start_button = QPushButton("Start Mixing", self)
-        self.start_button.setStyleSheet("background-color: #109d4c; color: white; font-size: 16px;")
-        self.start_button.clicked.connect(self.start_mixing)
-        self.layout.addWidget(self.start_button)
+        button_layout = QHBoxLayout()
 
-        self.stop_button = QPushButton("Stop Mixing", self)
-        self.stop_button.setStyleSheet("background-color: #d9534f; color: white; font-size: 16px;")
-        self.stop_button.clicked.connect(self.stop_mixing)
-        self.layout.addWidget(self.stop_button)
+        back_button = QPushButton("Back")
+        back_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: white; color: #109d4c; border: 2px solid #109d4c; border-radius: 5px;")
+        back_button.clicked.connect(self.go_back)
+        button_layout.addWidget(back_button)
 
-        self.release_button = QPushButton("Release to Field", self)
-        self.release_button.setStyleSheet("background-color: #f0ad4e; color: white; font-size: 16px;")
-        self.release_button.clicked.connect(self.confirm_release)
+        self.confirm_button = QPushButton("Confirm and Mix")
+        self.confirm_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: #109d4c; color: white; border-radius: 5px;")
+        self.confirm_button.clicked.connect(self.start_mixing)
+        button_layout.addWidget(self.confirm_button)
+
+        self.layout.addLayout(button_layout)
+
+        # Mixing status label
+        self.status_label = QLabel("")
+        self.status_label.setAlignment(Qt.AlignCenter)
+        self.status_label.setStyleSheet("font-size: 16px; color: black; margin-top: 20px;")
+        self.layout.addWidget(self.status_label)
+
+        # Release to field button (hidden initially)
+        self.release_button = QPushButton("Release to Field")
+        self.release_button.setStyleSheet("padding: 10px; font-size: 14px; background-color: #109d4c; color: white; border-radius: 5px;")
+        self.release_button.clicked.connect(self.release_to_field)
+        self.release_button.hide()  # Initially hidden
         self.layout.addWidget(self.release_button)
 
-        # Timer Setup
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_timer)
-        self.time_elapsed = QTime(0, 0, 0)
+        # Timer setup
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.complete_mixing)
 
     def start_mixing(self):
-        self.timer.start(1000)  # Timer updates every second
+        mixing_time = self.timer_input.value()
+        self.status_label.setText("Mixing... Please wait.")
+        self.status_label.setStyleSheet("font-size: 16px; color: orange; margin-top: 20px;")
+        self.timer.start(mixing_time * 1000)  # Convert seconds to milliseconds
+        self.confirm_button.setEnabled(False)  # Disable confirm button during mixing
 
-    def stop_mixing(self):
+    def complete_mixing(self):
         self.timer.stop()
+        self.status_label.setText("Mixing successful!")
+        self.status_label.setStyleSheet("font-size: 16px; color: green; margin-top: 20px;")
+        self.release_button.show()  # Show the release button
+        self.confirm_button.setEnabled(True)  # Re-enable confirm button
 
-    def update_timer(self):
-        self.time_elapsed = self.time_elapsed.addSecs(1)
-        self.timer_label.setText(self.time_elapsed.toString("hh:mm:ss"))
+    def release_to_field(self):
+        self.status_label.setText("Released to the field.")
+        self.status_label.setStyleSheet("font-size: 16px; color: blue; margin-top: 20px;")
+        self.release_button.setEnabled(False)  # Disable release button after use
 
-    def confirm_release(self):
-        # Dialog for release confirmation
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Confirm Release")
-
-        layout = QVBoxLayout(dialog)
-        message = QLabel("Are you sure you want to release to the field?")
-        layout.addWidget(message)
-
-        buttons = QDialogButtonBox(QDialogButtonBox.Yes | QDialogButtonBox.No)
-        buttons.accepted.connect(lambda: self.release_action(dialog, True))
-        buttons.rejected.connect(lambda: self.release_action(dialog, False))
-        layout.addWidget(buttons)
-
-        dialog.exec_()
-
-    def release_action(self, dialog, confirmed):
-        if confirmed:
-            print("Released to the field!") 
-        dialog.close()
+    def go_back(self):
+        from fertilizersPage import FertilizerPage  # Update the import if necessary
+        fertilizer_page = FertilizerPage()
+        self.window().setCentralWidget(fertilizer_page)

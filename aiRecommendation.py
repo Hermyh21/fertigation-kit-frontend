@@ -9,7 +9,6 @@ class AiRecommendationPage(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
-
     def init_ui(self):
         # Main layout
         layout = QVBoxLayout()
@@ -29,7 +28,7 @@ class AiRecommendationPage(QWidget):
         self.npk_input = QLineEdit()
         self.ph_input = QLineEdit()
         self.crop_type_input = QComboBox()
-        self.crop_type_input.addItems(["Wheat", "Corn", "Rice", "Soybean", "Cotton"])  # Example crop types
+        self.crop_type_input.addItems(["Wheat", "Corn", "Rice", "Soybean", "Teff"])  # Example crop types
 
         # Add fields to the form
         # form_layout.addRow("Weather:", self.weather_input)
